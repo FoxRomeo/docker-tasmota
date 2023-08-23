@@ -1,7 +1,7 @@
 FROM python:latest
 
 LABEL description="Docker Container with a complete build environment for Tasmota using PlatformIO" \
-      version="12.3" \
+      version="13.0" \
       maintainer="blakadder_" \
       organization="https://github.com/tasmota"       
 
@@ -20,9 +20,8 @@ RUN cd /init_pio_tasmota &&\
     cd ../ &&\ 
     rm -fr init_pio_tasmota &&\ 
     cp -r /root/.platformio / &&\ 
-    chmod -R 777 /.platformio &&\
     mkdir /.cache /.local &&\
-    chmod -R 777 /.cache /.local
+    chmod -R 777 /.platformio /usr/local/lib /.cache /.local
 
 
 COPY entrypoint.sh /entrypoint.sh
