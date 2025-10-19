@@ -25,7 +25,7 @@ if test -d "`pwd`/Tasmota"; then
     if [ "$USE_STABLE" = "1" ]; then
         if [ -z "${TASMOTA_BRANCH}" ]; then
             echo -e "Checking Tasmota GitHub for the most recent release version"
-            TASMOTA_BRANCH=$(wget -qO - https://api.github.com/repos/arendst/Tasmota/releases/latest | grep -oP 'tag_name"\s*:\s*"\K[^"]+')
+            TASMOTA_BRANCH=$(curl -s https://api.github.com/repos/arendst/Tasmota/releases/latest | grep -oE '"tag_name"[[:space:]]*:[[:space:]]*"[^"]+"' | cut -d'"' -f4)
         else
             echo -e "getting version \"${TASMOTA_BRANCH}\" from GitHub"
         fi
@@ -79,9 +79,9 @@ if test -d "`pwd`/Tasmota"; then
         if [ $# -ne 0 ]; then
             if [[ $@ == "tasmota"* ]]; then
                 if [ "${USE_TEE}" = "1" ]; then
-                    docker run ${DOCKER_TTY} --rm -v "${USE_VOLUME}":/tasmota -u $UID:$GID $DOCKER_IMAGE $(printf ' -e %s' $@) 2>&1 | tee ${TEE_PARAMETER} docker-tasmota.log
+                    docker run ${DOCKER_TTY} --rm -v "${USE_VOLUME}":/tasmota -e HOST_UID=$UID -e HOST_GID=$GID $DOCKER_IMAGE $(printf ' -e %s' $@) 2>&1 | tee ${TEE_PARAMETER} docker-tasmota.log
                 else
-                    docker run ${DOCKER_TTY} --rm -v "${USE_VOLUME}":/tasmota -u $UID:$GID $DOCKER_IMAGE $(printf ' -e %s' $@) 2>&1 > docker-tasmota.log
+                    docker run ${DOCKER_TTY} --rm -v "${USE_VOLUME}":/tasmota -e HOST_UID=$UID -e HOST_GID=$GID $DOCKER_IMAGE $(printf ' -e %s' $@) 2>&1 > docker-tasmota.log
                 fi
                 echo -e "\\r${CHECK_MARK} Finished!  \tCompilation log in docker-tasmota.log\n"
             else
@@ -90,9 +90,9 @@ if test -d "`pwd`/Tasmota"; then
             fi
         else
             if [ "${USE_TEE}" = "1" ]; then
-                docker run ${DOCKER_TTY} --rm -v "${USE_VOLUME}":/tasmota -u $UID:$GID $DOCKER_IMAGE 2>&1 | tee ${TEE_PARAMETER} docker-tasmota.log
+                docker run ${DOCKER_TTY} --rm -v "${USE_VOLUME}":/tasmota -e HOST_UID=$UID -e HOST_GID=$GID $DOCKER_IMAGE 2>&1 | tee ${TEE_PARAMETER} docker-tasmota.log
             else
-                docker run ${DOCKER_TTY} --rm -v "${USE_VOLUME}":/tasmota -u $UID:$GID $DOCKER_IMAGE 2>&1 > docker-tasmota.log
+                docker run ${DOCKER_TTY} --rm -v "${USE_VOLUME}":/tasmota -e HOST_UID=$UID -e HOST_GID=$GID $DOCKER_IMAGE 2>&1 > docker-tasmota.log
             fi
             echo -e "\\r${CHECK_MARK} Finished! \tCompilation log in docker-tasmota.log\n"
             echo -e "Find your builds in $rundir/Tasmota/build_output/firmware\n"

@@ -1,30 +1,24 @@
-FROM python:latest
+FROM python:3.13-slim
 
-LABEL description="Docker Container with a complete build environment for Tasmota using PlatformIO" \
-      version="13.0" \
+LABEL description="Docker Container with a build environment for Tasmota using PlatformIO" \
+      version="15.0" \
       maintainer="blakadder_" \
-      organization="https://github.com/tasmota"       
+      organization="https://github.com/tasmota"
 
-# Install platformio. 
-RUN pip install --upgrade pip &&\ 
-    pip install --upgrade platformio
+# Copy uv binary from official image  
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
-# Init project
-COPY init_pio_tasmota /init_pio_tasmota
+# Environment variables for uv
+ENV UV_SYSTEM_PYTHON=1
+ENV UV_NO_CACHE=1
 
-# Install project dependencies using a init project.
-RUN cd /init_pio_tasmota &&\ 
-    platformio upgrade &&\
-    pio pkg update &&\
-    pio run &&\
-    cd ../ &&\ 
-    rm -fr init_pio_tasmota &&\ 
-    cp -r /root/.platformio / &&\ 
-    mkdir /.cache /.local &&\
-    chmod -R 777 /.platformio /usr/local/lib /.cache /.local
+# Install needed git package
+RUN apt-get update && apt-get install -y --no-install-recommends git && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Install pio core
+RUN uv pip install https://github.com/Jason2866/platformio-core/archive/refs/tags/v6.1.18.zip
 
 COPY entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
-
