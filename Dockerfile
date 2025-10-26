@@ -19,7 +19,7 @@ RUN apt-get update && \
 
 # Install pio core
 # RUN uv pip install https://github.com/Jason2866/platformio-core/archive/refs/tags/v6.1.17.zip
-RUN uv python3 -m pip install -U platformio
+RUN uv pip install -U platformio
 
 COPY entrypoint.sh /entrypoint.sh
 
