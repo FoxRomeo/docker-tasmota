@@ -10,6 +10,7 @@ if [ -d $TASMOTA_VOLUME ]; then
     echo "Compiling Tasmota..."
     
     # Run compilation
+    pio pkg outdated
     pio run $@
     
     # Fix ownership of build output files to match the host user

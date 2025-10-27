@@ -6,10 +6,10 @@ CHECK_MARK="\033[0;32m\xE2\x9C\x94\033[0m"
 rundir=$(dirname $(readlink -f $0))
 
 # use default docker-tasmota image from hub.docker.com
-DOCKER_IMAGE=${DOCKER_IMAGE:="blakadder/docker-tasmota"}
+#DOCKER_IMAGE=${DOCKER_IMAGE:="blakadder/docker-tasmota"}
 # uncomment and change if you want to run a locally built image
 # or set DOCKER_IMAGE as environment variable before starting this script
-#DOCKER_IMAGE=docker-tasmota
+DOCKER_IMAGE=docker-tasmota
 
 # Set to `1=true` to use latest stable release tag
 # Set to `0=false` to use `development` branch (default)
